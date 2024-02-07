@@ -10,7 +10,7 @@ def validate_token(func):
   if (token == None or token == ""):
    return make_response(jsonify("Please provide a token"), 403)
   
-  result = run_statement('CALL validate_token(?)', [token])
+  result = run_statement('CALL validate_patient_token(?)', [token])
 
   if (len(result) == 0):
    return make_response(jsonify("invalid token, please login"), 403)
@@ -20,31 +20,7 @@ def validate_token(func):
   response = func(*args, **kwargs)
 
 
-
   return response
   #Renaming the function name:
  wrapper.__name__ = func.__name__
  return wrapper
-
-def validate_restaurant_token(func):
- def restaurant_wrapper(*args, **kwargs):
-
-  # print("Running middle ware")
-
-  token = request.headers.get("token")
-  if (token == None or token == ""):
-   return make_response(jsonify("Please provide a token"), 403)
-  
-  result = run_statement('CALL validate_restaurant_token(?)', [token])
-
-  if (len(result) == 0):
-   return make_response(jsonify("invalid token, please login"), 403)
-  
-  # print("FriedRice", result)
-
-  response = func(*args, **kwargs)
-
-
-  return response
- restaurant_wrapper.__name__ = func.__name__
- return restaurant_wrapper

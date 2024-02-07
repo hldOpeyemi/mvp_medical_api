@@ -1,17 +1,18 @@
 from flask import Flask, request, jsonify, make_response
+from flask_cors import CORS, cross_origin
 from dbhelpers import run_statement, serialize_data
 import json
 import secrets
-from middleware.auth import validate_restaurant_token, validate_token
-from constants.columns import client_columns, token_columns, client_signup_columns, restaurant_columns, restaurants_columns, restuarant_signup_columns
+from middleware.auth import validate_token
+from constants.columns import patient_columns, token_columns
 
 # Routes Imports
-from routes.menu import menu_bp
-from routes.client import client_bp
-from routes.restaurant import restaurant_bp
+
+from routes.patient import patient_bp
+from routes.doctor import doctor_bp
 
 app = Flask(__name__)
-
+CORS(app)
 
 @app.get("/")
 def health_check():
@@ -28,9 +29,8 @@ def private_router():
   
 
 
-app.register_blueprint(client_bp, url_prefix='/api')
-app.register_blueprint(menu_bp, url_prefix='/api')
-app.register_blueprint(restaurant_bp, url_prefix='/api')
+app.register_blueprint(patient_bp, url_prefix='/api')
+app.register_blueprint(doctor_bp, url_prefix='/api')
 
 
 app.run(debug=True)
