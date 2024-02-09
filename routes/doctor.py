@@ -3,7 +3,7 @@ from flask import Blueprint, jsonify, make_response, request
 from dbhelpers import run_statement, serialize_data;
 
 from constants.columns import patient_columns, doctor_token_columns,token_columns, patient_signup_columns, doctor_columns, doctors_columns, doctor_signup_columns
-from middleware.auth import validate_token
+from middleware.auth import validate_token, validate_doctor_token
 
 
 doctor_bp = Blueprint('doctor', __name__)
@@ -73,7 +73,7 @@ def get_all_doctor():
 # @validate_token
 # add validate_token if you want the user to sign in first before viewing another user
 def get_doctor():
-  # print(request.args.get("client_id"))
+ 
   try:
 
     doctor_id = request.args.get("doctor_id")
@@ -89,149 +89,132 @@ def get_doctor():
     return make_response("This is an error", 400)
  
 
-# @doctor_bp.delete("/doctor-login")
-# @validate_token
-# def restaurant_logout():
-#  try:
-#   token = request.headers.get('token')
-#   # print("CHECK THIS", token)
+@doctor_bp.delete("/doctor-login")
+@validate_doctor_token
+def doctor_logout():
+ try:
+  token = request.headers.get('token')
+  # print("CHECK THIS", token)
   
-#   session_columns = ['restaurant_id', 'restaurant_token']
+  session_columns = ['doctor_id', 'token']
   
-#   result = run_statement('CALL get_restaurant_session_by_token(?)', [token])
+  result = run_statement('CALL get_doctor_session_by_token(?)', [token])
   
-#   session = serialize_data(session_columns, result)[0]
+  session = serialize_data(session_columns, result)[0]
   
-#   # print("Pikin", session)
+  # print("Pikin", session)
 
-#   result = run_statement('CALL delete_restaurant_session(?)', [session['restaurant_id']])
+  result = run_statement('CALL delete_doctor_session(?)', [session['doctor_id']])
 
-#   # print("Omobaba", session['restaurant_id'])
-
-#   return make_response(jsonify("You have successfully logged Out"),  200)
-#  except:
-#   return make_response("This is an error", 400)
+  return make_response(jsonify("You have successfully logged Out"),  200)
+ except:
+  return make_response("This is an error", 400)
  
-# @doctor_bp.get("/secured")
-# @validate_token
-# def secured_route():
-#   print("this is a test")
-#   try:
-#     return make_response(jsonify("This is a private route"),  200)
-#   except:
-#     return make_response("This is an error", 400)
 
-# @doctor_bp.post("/doctor")
-# def doctor_signup():
-#  try:
-#   name = request.json.get('name') 
-#   email_address = request.json.get('email_address') 
-#   address = request.json.get('address') 
-#   phone_number = request.json.get('phone_number') 
-#   bio = request.json.get('bio') 
-#   city = request.json.get('city') 
-#   profile_url = request.json.get('profile_url')
-#   banner_url = request.json.get('banner_url') 
-#   password = request.json.get('password') 
+@doctor_bp.post("/doctor")
+def doctor_signup():
+ try:
+  first_name = request.json.get('first_name') 
+  last_name = request.json.get('last_name') 
+  medical_id = request.json.get('medical_id') 
+  speciality = request.json.get('speciality') 
+  email_address = request.json.get('email_address') 
+  password = request.json.get('password') 
+  image_url = request.json.get('image_url')
   
-#   result = run_statement('CALL restaurant_signup(?,?,?,?,?,?,?,?,?)', [name, email_address, address, phone_number, bio, city, profile_url, banner_url, password])
+  result = run_statement('CALL add_new_doctor(?,?,?,?,?,?,?)', [first_name, last_name, medical_id, speciality, email_address, password, image_url])
   
-#   # print(result)
+  # print(result)
 
-#   restaurant = serialize_data(doctor_signup_columns, result)[0]
+  doctor = serialize_data(doctor_signup_columns, result)[0]
 
-#   # print(client)
+  # print(client)
 
-#   return make_response(jsonify(restaurant),  200)
-#  except:
-#   return make_response("This is an error", 400)
+  return make_response(jsonify(doctor),  200)
+ except:
+  return make_response("This is an error", 400)
 
-# @doctor_bp.patch("/restaurant")
-# @validate_token
-# def restaurant_update():
-#  try:
+@doctor_bp.patch("/doctor")
+@validate_doctor_token
+def doctor_update():
+ try:
 
-#   # Creating a empty obj to hold either passed value or None for later updating
-#   restaurant_data = {}
+  # Creating a empty obj to hold either passed value or None for later updating
+  doctor_data = {}
 
-#   # TO DO
+  # TO DO
 
-#   restaurant_data['name'] = request.json.get('name') if request.json.get('name') else None
-#   restaurant_data['email_address'] = request.json.get('email_address') if request.json.get('email_address') else None
-#   restaurant_data['address'] = request.json.get('address') if request.json.get('address') else None
-#   restaurant_data['phone_number'] = request.json.get('phone_number') if request.json.get('phone_number') else None
-#   restaurant_data['bio'] = request.json.get('bio') if request.json.get('bio') else None
-#   restaurant_data['city'] = request.json.get('city') if request.json.get('city') else None
-#   restaurant_data['profile_url'] = request.json.get('profile_url') if request.json.get('profile_url') else None
-#   restaurant_data['banner_url'] = request.json.get('banner_url') if request.json.get('banner_url') else None
-#   restaurant_data['password'] = request.json.get('password') if request.json.get('password') else None
-  
+  doctor_data['first_name'] = request.json.get('first_name') if request.json.get('first_name') else None
+  doctor_data['last_name'] = request.json.get('last_name') if request.json.get('last_name') else None
+  doctor_data['medical_id'] = request.json.get('medical_id') if request.json.get('medical_id') else None
+  doctor_data['speciality'] = request.json.get('speciality') if request.json.get('speciality') else None
+  doctor_data['email_address'] = request.json.get('email_address') if request.json.get('email_address') else None
+  doctor_data['password'] = request.json.get('password') if request.json.get('password') else None
+  doctor_data['image_url'] = request.json.get('image_url') if request.json.get('image_url') else None
 
-#   # print(patient_data)
 
-#   token = request.headers.get('token')
-#   # print("CHECK THIS", token)
-  
-#   session_columns = ['restaurant_id', 'restaurant_token']
-
-#   result = run_statement('CALL get_restaurant_session_by_token(?)', [token])
-  
-#   session = serialize_data(session_columns, result)[0]
-
-#   # print(session)
-  
-#   result = run_statement(
-#    'CALL update_restaurant(?,?,?,?,?,?,?,?,?,?)', 
-#    [
-#     session['restaurant_id'],
-#     restaurant_data['name'],
-#     restaurant_data['email_address'],
-#     restaurant_data['address'],
-#     restaurant_data['phone_number'],
-#     restaurant_data['bio'],
-#     restaurant_data['city'],
-#     restaurant_data['profile_url'],
-#     restaurant_data['banner_url'],
-#     restaurant_data['password']
-#   ]
-#   )
-  
-#   print(result)
-#   # client = serialize_data(client_columns, result)[0]
-
-#   return make_response(jsonify("Restaurant succesfully updated"),  200)
-#  except:
-#   return make_response("This is an error", 400)
+  token = request.headers.get('token')
  
-# @doctor_bp.delete("/doctor")
-# @validate_token
-# def delete_resturant():
-#  try:
   
-#   password_input = request.json.get('password')
-#   token = request.headers.get('token')
-#   # print("CHECK THIS", token)
+  session_columns = ['doctor_id', 'token']
+
+  result = run_statement('CALL get_doctor_session_by_token(?)', [token])
   
-#   result = run_statement('CALL get_restaurant_session_by_token(?)', [token])
+  session = serialize_data(session_columns, result)[0]
 
-#   session = result[0]
-#   id = session[0]
-
-#   result = run_statement('CALL get_restaurant_by_id(?)',[id])
+  # print(session)
   
-#   restaurant=result[0]
-#   # print(restaurant)
-#   password = restaurant[9]
-#   # print(password)
-#   id = restaurant[0]
-#   # print(id)
+  result = run_statement(
+   'CALL update_doctor(?,?,?,?,?,?,?,?)', 
+   [
+    session['doctor_id'],
+    doctor_data['first_name'],
+    doctor_data['last_name'],
+    doctor_data['medical_id'],
+    doctor_data['speciality'],
+    doctor_data['email_address'],
+    doctor_data['password'],
+    doctor_data['image_url']
 
-#   if (password != password_input):
-#     return make_response(jsonify("Wrong Password"), 403)
+    ]
+  )
   
-#   result = run_statement('CALL delete_restaurant(?)', [id])
+  # print(result)
+  # client = serialize_data(client_columns, result)[0]
 
-#   return make_response(jsonify("Restaurant Deleted"),  200)
-#  except:
-#   return make_response("This is an error", 400)
+  return make_response(jsonify("Your profile is succesfully updated"),  200)
+ except:
+  return make_response("This is an error", 400)
+ 
+@doctor_bp.delete("/doctor")
+@validate_doctor_token
+def delete_doctor():
+ try:
+  
+  password_input = request.json.get('password')
+  token = request.headers.get('token')
+  # print("CHECK THIS", token)
+  
+  result = run_statement('CALL get_doctor_session_by_token(?)', [token])
+
+  session = result[0]
+  id = session[0]
+
+  result = run_statement('CALL get_doctor_by_id(?)',[id])
+  
+  doctor=result[0]
+  # print(restaurant)
+  password = doctor[6]
+  # print(password)
+  id = doctor[0]
+  # print(id)
+
+  if (password != password_input):
+    return make_response(jsonify("Wrong Password"), 403)
+  
+  result = run_statement('CALL delete_doctor(?)', [id])
+
+  return make_response(jsonify("Doctor Deleted"),  200)
+ except:
+  return make_response("This is an error", 400)
  

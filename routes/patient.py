@@ -45,7 +45,7 @@ def patient_login():
 # @validate_token
 # add validate_token if you want the user to sign in first before viewing another user
 def get_patient():
-  # print(request.args.get("client_id"))
+ 
   try:
 
     patient_id = request.args.get("patient_id")
@@ -53,8 +53,6 @@ def get_patient():
     result = run_statement('CALL get_patient_by_id(?)', [patient_id])
 
     patient=serialize_data(patient_columns, result)[0]
-
-    # print("Fried", client_id)
 
     return make_response(jsonify(patient),  200)
   except:
@@ -154,80 +152,71 @@ def patient_update():
   # , v_emergency_contact 
   # )
 
-  print("Rice", result)
-
-
-  # client = serialize_data(client_columns, result)[0]
-
   return make_response(jsonify("Patient Succesfully Updated"),  200)
  except:
   return make_response("This is an error", 400)
  
-# @patient_bp.delete("/patient")
-# @validate_token
-# def delete_client():
-#  try:
+@patient_bp.delete("/patient")
+@validate_token
+def delete_patient():
+ try:
   
-#   password_input = request.json.get('password')
-#   token = request.headers.get('token')
-#   # print("CHECK THIS", token)
+  password_input = request.json.get('password')
+  token = request.headers.get('token')
+  # print("CHECK THIS", token)
   
-#   result = run_statement('CALL get_session_by_token(?)', [token])
+  result = run_statement('CALL get_patient_session_by_token(?)', [token])
 
-#   session = result[0]
-#   id = session[0]
+  session = result[0]
+  id = session[0]
 
-#   result = run_statement('CALL get_client_by_id(?)',[id])
+  result = run_statement('CALL get_patient_by_id(?)',[id])
   
-#   client=result[0]
-#   # print(restaurant)
-#   password = client[5]
-#   # print(password)
-#   id = client[0]
-#   # print(id)
+  patient=result[0]
+  # print(restaurant)
+  password = patient[9]
+  # print(password)
+  id = patient[0]
+  # print(id)
 
-#   if (password != password_input):
-#     return make_response(jsonify("Wrong Password"), 403)
+  if (password != password_input):
+    return make_response(jsonify("Wrong Password"), 403)
   
-#   result = run_statement('CALL delete_client(?)', [id])
+  result = run_statement('CALL delete_patient(?)', [id])
 
-#   return make_response(jsonify("Client Deleted"),  200)
-#  except:
-#   return make_response("This is an error", 400)
+  return make_response(jsonify("Patient Deleted"),  200)
+ except:
+  return make_response("This is an error", 400)
  
 # @patient_bp.get("/patient")
 # @validate_token
 # # add validate_token if you want the user to sign in first before viewing another user
-# def get_all_clients():
-#   # print(request.args.get("client_id"))
+# def get_all_patients():
+#   # print(request.args.get("patient_id"))
 #   try:
 
-#     result = run_statement('CALL get_all_clients')
+#     result = run_statement('CALL get_all_patients')
 
 #     return make_response(jsonify(result),  200)
 #   except:
 #     return make_response("This is an error", 400)
   
 
-# @patient_bp.delete("/patient-login")
-# @validate_token
-# def client_logout():
-#  try:
-#   token = request.headers.get('token')
-#   # print("CHECK THIS", token)
+@patient_bp.delete("/patient-login")
+@validate_token
+def patient_logout():
+ try:
+  token = request.headers.get('token')
+  # print("CHECK THIS", token)
   
-#   session_columns = ['client_id', 'token']
+  session_columns = ['patient_id', 'token']
   
-#   result = run_statement('CALL get_session_by_token(?)', [token])
+  result = run_statement('CALL get_patient_session_by_token(?)', [token])
 
-#   session = serialize_data(session_columns, result)[0]
+  session = serialize_data(session_columns, result)[0]
   
-#   # print("Pikin", session)
+  result = run_statement('CALL delete_patient_session(?)', [session['patient_id']])
 
-#   result = run_statement('CALL delete_session(?)', [session['client_id']])
-
-#   # print("Omobaba", session['client_id'])
-
-#   return make_response(jsonify("You have successfully logged Out"),  200)
-#  except:
-#   return make_response("This is an error", 400)
+  return make_response(jsonify("You have successfully logged Out"),  200)
+ except:
+  return make_response("This is an error", 400)
