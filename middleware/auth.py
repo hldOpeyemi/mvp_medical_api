@@ -6,11 +6,11 @@ def validate_token(func):
 
   print("Running middle ware")
 
-  token = request.headers.get("token")
-  if (token == None or token == ""):
+  patient_token = request.headers.get("token")
+  if (patient_token == None or patient_token == ""):
    return make_response(jsonify("Please provide a token"), 403)
   
-  result = run_statement('CALL validate_patient_token(?)', [token])
+  result = run_statement('CALL validate_patient_token(?)', [patient_token])
 
   if (len(result) == 0):
    return make_response(jsonify("invalid token, please login"), 403)
@@ -31,11 +31,11 @@ def validate_doctor_token(func):
 
   # print("Running middle ware")
 
-  token = request.headers.get("token")
-  if (token == None or token == ""):
+  doctor_token = request.headers.get("token")
+  if (doctor_token == None or doctor_token == ""):
    return make_response(jsonify("Please provide a token"), 403)
   
-  result = run_statement('CALL validate_doctor_token(?)', [token])
+  result = run_statement('CALL validate_doctor_token(?)', [doctor_token])
 
   if (len(result) == 0):
    return make_response(jsonify("invalid token, please login"), 403)

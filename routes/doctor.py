@@ -2,7 +2,7 @@ import secrets
 from flask import Blueprint, jsonify, make_response, request
 from dbhelpers import run_statement, serialize_data;
 
-from constants.columns import patient_columns, doctor_token_columns,token_columns, patient_signup_columns, doctor_columns, doctors_columns, doctor_signup_columns
+from constants.columns import patient_columns, doctor_token_columns, patient_token_columns, patient_signup_columns, doctor_columns, doctors_columns, doctor_signup_columns
 from middleware.auth import validate_token, validate_doctor_token
 
 

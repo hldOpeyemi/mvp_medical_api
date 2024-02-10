@@ -4,14 +4,14 @@ import mariadb
 
 from dbhelpers import run_statement, serialize_data;
 
-from constants.columns import patient_columns, patient_token_columns, patient_signup_columns, doctor_columns, doctors_columns, doctor_signup_columns
+from constants.columns import patient_columns, patient_token_columns, doctor_token_columns, patient_signup_columns, doctor_columns, doctors_columns, doctor_signup_columns
 from middleware.auth import validate_token
 
 
-patient_bp = Blueprint('patient', __name__)
+appointment_bp = Blueprint('appointment', __name__)
 
-@patient_bp.post("/patient-login")
-def patient_login():
+@appointment_bp.post("/appointment")
+def add_appoinment():
  try:
   email_address = request.json.get('email')
   password = request.json.get('password')
@@ -41,7 +41,7 @@ def patient_login():
  except:
   return make_response("This is an error", 400)
 
-@patient_bp.get("/patient")
+@appointment_bp.get("/patient")
 # @validate_token
 # add validate_token if you want the user to sign in first before viewing another user
 def get_patient():
@@ -60,7 +60,7 @@ def get_patient():
    
   # print("CHECK THIS", token)
 
-@patient_bp.post("/patient")
+@appointment_bp.post("/patient")
 def add_new_patient():
   try:
     first_name = request.json.get('first_name')
@@ -87,7 +87,7 @@ def add_new_patient():
   except Exception as error:
     return make_response("ERROR", 400)
 
-@patient_bp.patch("/patient")
+@appointment_bp.patch("/patient")
 @validate_token
 def patient_update():
  try:
@@ -111,10 +111,10 @@ def patient_update():
 
   print(patient_data)
 
-  token = request.headers.get('patient_token')
+  token = request.headers.get('token')
   # print("CHECK THIS", token)
   
-  session_columns = ['patient_id', 'patient_token']
+  session_columns = ['patient_id', 'token']
 
 
   result = run_statement('CALL get_patient_session_by_token(?)', [token])
@@ -156,13 +156,13 @@ def patient_update():
  except:
   return make_response("This is an error", 400)
  
-@patient_bp.delete("/patient")
+@appointment_bp.delete("/patient")
 @validate_token
 def delete_patient():
  try:
   
   password_input = request.json.get('password')
-  token = request.headers.get('patient_token')
+  token = request.headers.get('token')
   # print("CHECK THIS", token)
   
   result = run_statement('CALL get_patient_session_by_token(?)', [token])
@@ -188,7 +188,7 @@ def delete_patient():
  except:
   return make_response("This is an error", 400)
  
-# @patient_bp.get("/patient")
+# @appointment_bp.get("/patient")
 # @validate_token
 # # add validate_token if you want the user to sign in first before viewing another user
 # def get_all_patients():
@@ -202,14 +202,14 @@ def delete_patient():
 #     return make_response("This is an error", 400)
   
 
-@patient_bp.delete("/patient-login")
+@appointment_bp.delete("/patient-login")
 @validate_token
 def patient_logout():
  try:
   token = request.headers.get('token')
-  print("CHECK THIS", token)
+  # print("CHECK THIS", token)
   
-  session_columns = ['patient_id', 'patient_token']
+  session_columns = ['patient_id', 'token']
   
   result = run_statement('CALL get_patient_session_by_token(?)', [token])
 
