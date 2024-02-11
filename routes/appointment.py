@@ -1,164 +1,75 @@
 import secrets
 from flask import Blueprint, jsonify, make_response, request
 import mariadb
+from datetime import datetime, timedelta
+import time
 
 from dbhelpers import run_statement, serialize_data;
 
-from constants.columns import patient_columns, patient_token_columns, doctor_token_columns, patient_signup_columns, doctor_columns, doctors_columns, doctor_signup_columns
+from constants.columns import appointment_columns
 from middleware.auth import validate_token
 
 
 appointment_bp = Blueprint('appointment', __name__)
 
+
 @appointment_bp.post("/appointment")
-def add_appoinment():
- try:
-  email_address = request.json.get('email')
-  password = request.json.get('password')
-  
-  result = run_statement('CALL patient_login(?,?)', [email_address, password])
-  # print(len(result)) 
-
-  if (len(result)<1):
-   return make_response(jsonify("Email not in use"), 401)
-  print(result)
-  patient = serialize_data(patient_columns, result)[0]
-
-  if (patient["password"] != password):
-   return make_response(jsonify("Wrong Password"), 403)
-  
-  result = run_statement('CALL delete_patient_session(?)', [patient["id"]])
-
-  token_string = secrets.token_hex(16)
-
-  print(token_string)
-  result = run_statement('CALL post_patient_login(?,?)', [patient["id"], token_string])
-
-  token = serialize_data(patient_token_columns, result)[0]
-
-  return make_response(jsonify(token),  200)
- 
- except:
-  return make_response("This is an error", 400)
-
-@appointment_bp.get("/patient")
-# @validate_token
-# add validate_token if you want the user to sign in first before viewing another user
-def get_patient():
- 
+def add_new_appointment():
   try:
-
-    patient_id = request.args.get("patient_id")
-
-    result = run_statement('CALL get_patient_by_id(?)', [patient_id])
-
-    patient=serialize_data(patient_columns, result)[0]
-
-    return make_response(jsonify(patient),  200)
-  except:
-    return make_response("This is an error", 400)
-   
-  # print("CHECK THIS", token)
-
-@appointment_bp.post("/patient")
-def add_new_patient():
-  try:
-    first_name = request.json.get('first_name')
-    last_name = request.json.get('last_name')
-    date_of_birth = request.json.get('date_of_birth')
-    phone_number = request.json.get('phone_number')
-    contact_address = request.json.get('contact_address') 
-    health_card_number = request.json.get('health_card_number')
-    email_address = request.json.get('email_address')
-    password = request.json.get('password')
-    gender = request.json.get('gender')
-    emergency_contact =request.json.get('emergency_contact')
-
-    # print(len([first_name, last_name, date_of_birth, phone_number, contact_address, health_card_number, email_address, password, gender, emergency_contact]), [first_name, last_name, date_of_birth, phone_number, contact_address, health_card_number, password, email_address, gender, emergency_contact])
-
-    result = run_statement('CALL add_new_patient(?,?,?,?,?,?,?,?,?,?)', [first_name, last_name, date_of_birth, phone_number, contact_address, health_card_number, email_address, password, gender, emergency_contact])
     
-    if (type(result) == mariadb.IntegrityError):
-      return make_response(jsonify(str(result)), 400)
+    patient_id = request.json.get('patient_id')
+    doctor_id = request.json.get('doctor_id')
+    appt_date = request.json.get('appt_date')
+    start_time = request.json.get('start_time')
+    end_time = request.json.get('end_time')
+    status = request.json.get('status')
+    # start_time_str = (datetime.min + start_time).strftime('%H:%M:%S')
+    # end_time_str = (datetime.min + end_time).strftime('%H:%M:%S')
+    # appt_date_str = appt_date.strftime('%Y-%m-%d')
+  
+    result = run_statement('CALL add_new_appointment(?,?,?,?,?,?)', [patient_id, doctor_id, appt_date, start_time, end_time, status])
+    print("Changing", result)
 
-    patient = serialize_data(patient_signup_columns, result)[0]
+    appointment = serialize_data(appointment_columns, result)[0]
 
-    return make_response(jsonify(patient),  200)
+    return make_response(jsonify(appointment),  200)
   except Exception as error:
     return make_response("ERROR", 400)
 
-@appointment_bp.patch("/patient")
-@validate_token
-def patient_update():
+@appointment_bp.patch("/appointment")
+def edit_appointment():
  try:
 
   # Creating a empty obj to hold either passed value or None for later updating
-  patient_data = {}
+  appointment_data = {}
+  appointment_data['patient_id'] = request.json.get('patient_id') if request.json.get('patient_id') else None
+  appointment_data['doctor_id'] = request.json.get('doctor_id') if request.json.get('doctor_id') else None
+  appointment_data['appt_date'] = request.json.get('appt_date') if request.json.get('appt_date') else None
+  appointment_data['start_time'] = request.json.get('start_time') if request.json.get('start_time') else None
+  appointment_data['end_time'] = request.json.get('end_time') if request.json.get('end_time') else None
+  appointment_data['status'] = request.json.get('status') if request.json.get('status') else None
 
-  # TO DO
-
-  patient_data['first_name'] = request.json.get('first_name') if request.json.get('first_name') else None
-  patient_data['last_name'] = request.json.get('last_name') if request.json.get('last_name') else None
-  patient_data['date_of_birth'] = request.json.get('date_of_birth') if request.json.get('date_of_birth') else None
-  patient_data['phone_number'] = request.json.get('phone_number') if request.json.get('phone_number') else None
-  patient_data['contact_address'] = request.json.get('contact_address') if request.json.get('contact_address') else None
-  patient_data['health_card_number'] = request.json.get('health_card_number') if request.json.get('health_card_number') else None
-  patient_data['email_address'] = request.json.get('email_address') if request.json.get('email_address') else None
-  patient_data['password'] = request.json.get('password') if request.json.get('password') else None
-  patient_data['gender'] = request.json.get('gender') if request.json.get('gender') else None
-  patient_data['emergency_contact'] = request.json.get('emergency_contact') if request.json.get('emergency_contact') else None
-  
-
-  print(patient_data)
-
-  token = request.headers.get('token')
-  # print("CHECK THIS", token)
-  
-  session_columns = ['patient_id', 'token']
-
-
-  result = run_statement('CALL get_patient_session_by_token(?)', [token])
-  
-  session = serialize_data(session_columns, result)[0]
-
-  print(session["patient_id"], type((session["patient_id"])))
-  
-  result = run_statement(
-   'CALL update_patient(?,?,?,?,?,?,?,?,?,?,?)', 
+  result = run_statement('CALL edit_appointment(?,?,?,?,?,?,?,?,?,?,?)', 
+   
    [
-    session['patient_id'],
-    patient_data['first_name'],
-    patient_data['last_name'] ,
-    patient_data['date_of_birth'],
-    patient_data['phone_number'],
-    patient_data['contact_address'],
-    patient_data['health_card_number'],
-    patient_data['email_address'],
-    patient_data['password'],
-    patient_data['gender'],
-    patient_data['emergency_contact'] 
-  ]
-  )
-  # ( v_id int, 
-  #   v_first_name 
-  # , v_last_name 
-  # , v_date_of_birth 
-  # , v_phone_number 
-  # , v_contact_address 
-  # , v_health_card_number 
-  # , v_email_address 
-  # , v_password 
-  # , v_gender 
-  # , v_emergency_contact 
-  # )
-
-  return make_response(jsonify("Patient Succesfully Updated"),  200)
+    appointment_data['id'],
+    appointment_data['patient_id'],
+    appointment_data['doctor_id'] ,
+    appointment_data['appt_date'],
+    appointment_data['start_time'],
+    appointment_data['end_time'],
+    appointment_data['status'],
+    ])
+  
+  return make_response(jsonify("Appointment Succesfully Updated", result),  200)
  except:
   return make_response("This is an error", 400)
  
-@appointment_bp.delete("/patient")
-@validate_token
-def delete_patient():
+
+ 
+@appointment_bp.delete("/appoitnment")
+
+def delete_appointment():
  try:
   
   password_input = request.json.get('password')

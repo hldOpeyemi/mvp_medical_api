@@ -1,0 +1,824 @@
+-- MariaDB dump 10.19-11.2.2-MariaDB, for Win64 (AMD64)
+--
+-- Host: localhost    Database: medical_office_mvp
+-- ------------------------------------------------------
+-- Server version	11.2.2-MariaDB
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `appointments`
+--
+
+DROP TABLE IF EXISTS `appointments`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `appointments` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `patient_id` int(10) unsigned DEFAULT NULL,
+  `doctor_id` int(10) unsigned DEFAULT NULL,
+  `appt_date` varchar(100) DEFAULT NULL,
+  `start_time` varchar(100) DEFAULT NULL,
+  `end_time` varchar(100) DEFAULT NULL,
+  `status` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `appointments_patients_FK` (`patient_id`),
+  KEY `appointments_doctors_FK` (`doctor_id`),
+  CONSTRAINT `appointments_doctors_FK` FOREIGN KEY (`doctor_id`) REFERENCES `doctors` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `appointments_patients_FK` FOREIGN KEY (`patient_id`) REFERENCES `patients` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `appointments`
+--
+
+LOCK TABLES `appointments` WRITE;
+/*!40000 ALTER TABLE `appointments` DISABLE KEYS */;
+INSERT INTO `appointments` VALUES
+(1,2,3,'2023-11-11','14:30:00','15:00:00',NULL),
+(2,1,4,'2023-10-11','10:30:00','11:00:00',NULL),
+(4,5,3,'2024-02-13','15:00:00','15:30:00','pending'),
+(7,5,3,'2024-02-12','15:00:00','15:30:00','pending'),
+(8,5,3,'2024-02-10','15:00:00','15:30:00','pending'),
+(9,5,3,'2024-02-10','15:00:00','15:30:00','pending'),
+(10,5,3,'2024-02-15','15:00:00','15:30:00','pending'),
+(11,5,3,'2024-02-15','15:00:00','15:30:00','pending'),
+(12,5,4,'2024-02-15','15:00:00','15:30:00','pending'),
+(31,5,5,'2024-02-19','10:09:00','21:09:00',''),
+(32,6,5,'2024-02-28','16:15:00','18:13:00',''),
+(33,5,4,'2024-03-15','15:00:00','15:30:00','pending'),
+(34,5,4,'2024-03-15','15:00:00','15:30:00','pending'),
+(35,5,4,'2024-03-15','15:00:00','15:30:00','pending');
+/*!40000 ALTER TABLE `appointments` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `doctor_session`
+--
+
+DROP TABLE IF EXISTS `doctor_session`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `doctor_session` (
+  `doctor_id` int(10) unsigned DEFAULT NULL,
+  `doctor_token` varchar(100) NOT NULL,
+  PRIMARY KEY (`doctor_token`),
+  KEY `doctor_session_doctors_FK` (`doctor_id`),
+  CONSTRAINT `doctor_session_doctors_FK` FOREIGN KEY (`doctor_id`) REFERENCES `doctors` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `doctor_session`
+--
+
+LOCK TABLES `doctor_session` WRITE;
+/*!40000 ALTER TABLE `doctor_session` DISABLE KEYS */;
+/*!40000 ALTER TABLE `doctor_session` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `doctors`
+--
+
+DROP TABLE IF EXISTS `doctors`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `doctors` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `first_name` varchar(100) NOT NULL,
+  `last_name` varchar(100) NOT NULL,
+  `medical_id` varchar(100) NOT NULL,
+  `speciality` varchar(100) NOT NULL,
+  `email_address` varchar(100) NOT NULL,
+  `password` varchar(100) NOT NULL,
+  `image_url` varchar(10000) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `Doctors_unique` (`medical_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `doctors`
+--
+
+LOCK TABLES `doctors` WRITE;
+/*!40000 ALTER TABLE `doctors` DISABLE KEYS */;
+INSERT INTO `doctors` VALUES
+(1,'Jack','Robinson','2536-GM-252','General Medicine','jrobin@doctor.com','doctor@1!','https://media.gettyimages.com/id/200479170-003/photo/mature-doctor-smiling-portrait.jpg?s=612x612&w=0&k=20&c=hwp7cSrURDx9wEbYOCA8GcXBATfW_Zss_3ZlYs3eQP8='),
+(2,'John','Snow','2579-PE-658','Pediatrician','jsnow@doctor.com','mypassword@6!','https://media.gettyimages.com/id/1342708859/photo/portrait-of-a-male-doctor.jpg?s=612x612&w=0&k=20&c=7ojvfSnLNx73sR1xXTReBrIXJOZPpSNFZ3E9CodsfQU='),
+(3,'Bruce','Willis','5864-GM-856','General Medicine','bwillis@doctor.com','doctor@3!','https://media.gettyimages.com/id/1307155498/photo/smiling-male-doctor-against-gray-background.jpg?s=612x612&w=0&k=20&c=aUeeX6ygz7JmykqBAzOPX-DvGWKpt_ms3wStqup3ytM='),
+(4,'Lisa','Mockinn','8524-GY-244','Gynecologist','lmockinn@doctor.com','doctor@4!','https://media.gettyimages.com/id/1468678629/photo/portrait-healthcare-and-tablet-with-a-doctor-woman-at-work-in-a-hospital-for-research-or.jpg?s=612x612&w=0&k=20&c=8mSMYs7a6eHIZ2EFm-9x6Z2WQHW3uOruYXXzT7JugYI='),
+(5,'Charles','Chaplin','6352-Ha-668','Pediatrician','ccchaplin@doctor.com','doctor@5!','https://media.gettyimages.com/id/1139665862/photo/senior-male-doctor-smiling-on-white-background.jpg?s=612x612&w=0&k=20&c=JWiTQUn6u-XwPmtiH58m_BPLEXxo7S9-Tt_CH0JarJk='),
+(6,'Wendy','Williams','1572-GM-457','General Medicine','wwilliams@doctor.com','doctor@6!','https://media.gettyimages.com/id/1207212199/photo/youre-well-on-your-way-back-to-full-health.jpg?s=612x612&w=0&k=20&c=miBOM7fnv3W_DmJKSbv5szv8MdBav3bNyNGJUcoQmuk='),
+(7,'Keturah','Etuk','3654-GM-965','General Medicine','ketuk@doctor.com','doctor@7!','https://media.gettyimages.com/id/1400102237/photo/african-american-female-doctor-with-arms-crossed-over-white-background.jpg?s=612x612&w=0&k=20&c=p4e_xYFeMn0Fdlpn85qH0lMuNseu_fmUEPpcbaHX9jw='),
+(8,'John','Travolta','25683-TG-3654','Dietian','jtravolta@doctor2!','mypassword@2!','https://media.gettyimages.com/id/1397713456/photo/i-will-work-with-you.jpg?s=612x612&w=0&k=20&c=Zb7J_SfiBZIVTSE0ZsHOrv06aGWXsEtzRj8XElHxVmo='),
+(10,'Gemma','Applelove','2568-GY-632','Gynecologist','gapplelove@doctor.com','mypassword@4!','https://media.gettyimages.com/id/958886668/photo/female-doctor-discusses-something-with-young-mixed-race-patient.jpg?s=612x612&w=0&k=20&c=isqPNqvo8JCKxu7Pc6WgFij5MxhE0yRkiu8Rb-BxJQU=');
+/*!40000 ALTER TABLE `doctors` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `patient_session`
+--
+
+DROP TABLE IF EXISTS `patient_session`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `patient_session` (
+  `patient_id` int(10) unsigned DEFAULT NULL,
+  `patient_token` varchar(100) NOT NULL,
+  PRIMARY KEY (`patient_token`),
+  KEY `patient_session_patients_FK` (`patient_id`),
+  CONSTRAINT `patient_session_patients_FK` FOREIGN KEY (`patient_id`) REFERENCES `patients` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `patient_session`
+--
+
+LOCK TABLES `patient_session` WRITE;
+/*!40000 ALTER TABLE `patient_session` DISABLE KEYS */;
+INSERT INTO `patient_session` VALUES
+(6,'958f8f1a8a97e5e6dbe499272a7e9aa0'),
+(7,'4616e8802667e4f77757b125bda86974');
+/*!40000 ALTER TABLE `patient_session` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `patients`
+--
+
+DROP TABLE IF EXISTS `patients`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `patients` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `first_name` varchar(100) NOT NULL,
+  `last_name` varchar(100) NOT NULL,
+  `date_of_birth` varchar(100) NOT NULL,
+  `phone_number` varchar(100) NOT NULL,
+  `contact_address` varchar(100) NOT NULL,
+  `health_card_number` varchar(100) NOT NULL,
+  `email_address` varchar(100) NOT NULL,
+  `password` varchar(100) NOT NULL,
+  `gender` varchar(100) NOT NULL,
+  `emergency_contact` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `patients_unique` (`health_card_number`),
+  UNIQUE KEY `patients_unique_1` (`email_address`)
+) ENGINE=InnoDB AUTO_INCREMENT=53 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `patients`
+--
+
+LOCK TABLES `patients` WRITE;
+/*!40000 ALTER TABLE `patients` DISABLE KEYS */;
+INSERT INTO `patients` VALUES
+(1,'Jason','Bate','June 15, 1986','586-257-4454','579 address lane, Calgary','25839-1586','jbate@hospital.com','password@1!','Male','986-356-2456'),
+(2,'Donald','Trump','September 18, 1925','586-587-1665','857 address lane, Edmonton','15287-6397','dtrump@hospital.com','password@2!','Male','366-658-2565'),
+(3,'Michael','Jackson','January 25, 1968','586-857-9687','testing','36871-3562','mjackson@hospital.com','password@3!','Male','584-987-6348'),
+(5,'Jennifer','Lopez','December 01, 1972','258-485-6971','869 address lane, Edmonton','56987-2345','jlopez@hospital.com','password@5!','Female','239-597-8974'),
+(6,'Kendra','Aniston','May 25, 1980','368-968-2659','258 address lane, Edmonton','58736-1545','kaniston@hospital.com','password@6!','Female','857-658-9687'),
+(7,'Rachel','Cocomelon','January 03, 2011','533-698-2512','689 address lane, Edmonton','53685-254','rcocomelon@hospital.com','password@7!','Female',NULL),
+(8,'Rachel','Cocomelon','January 03, 2011','533-698-2512','689 address lane, Edmonton','53685-586','pcocomelon@hospital.com','password@7!','Female','224-265-2456'),
+(9,'Justine','Momore','January 01, 2000','693-563-5841','3698 Address lane, Edmonton','56952-6935','rcocomelon@patient.com','password@8!','Male','586-969-5879'),
+(47,'Richard','Momore','January 01, 2000','693-563-5841','857 address lane, Edmonton','56952-6932','rcocomelon@golgo.com','password@9!','Male','586-969-5879'),
+(48,'Fela','Anikulapo','March 16, 1920','853-587-2123','965 Address Lane, Edmonton','89687-698','fanikulapo@patient.com','paswword@10!','Male','869-584-5441'),
+(49,'Rocky','Bauba','May 23, 1910','568-859-2351','125 Address Lane, Edmonton','23515-697','rbauba@patient.com','paswword@11!','Male','569-231-5684'),
+(50,'Sandra','Bullock','September 20, 1960','125-258-2582','586 Address Lane, Edmonton','12539-5870','sbullock@patient.com','paswword@12!','Female','569-987-2583'),
+(51,'','Jennifer','Lopez','253-698-1235','698 Address Lane, Edmonton','58962-2156','jlopez@patient.com','password@13!','Female','580-658-2571'),
+(52,'Christina','Applegate','June 11, 1970','123-458-9632','111 Address lane, Edmonton','56987-369','capplegate@patient.com','password@14!','Female','568-987-5213');
+/*!40000 ALTER TABLE `patients` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Dumping routines for database 'medical_office_mvp'
+--
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `add_new_appointment` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `add_new_appointment`(v_patient_id int, v_doctor_id int, v_appt_date varchar(100), v_start_time varchar(100), v_end_time varchar(100), v_status varchar(100))
+    MODIFIES SQL DATA
+begin
+	insert into `medical_office_mvp`.appointments (patient_id, doctor_id, appt_date, start_time, end_time, status) 
+	values (v_patient_id, v_doctor_id, v_appt_date, v_start_time, v_end_time, v_status);
+	select * from appointments where id=last_insert_id();
+	commit;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `add_new_doctor` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `add_new_doctor`(v_first_name varchar(100), v_last_name varchar(100), v_medical_id varchar(100), v_speciality varchar(100),  v_email_address varchar(100), v_password varchar(100), v_image_url varchar(1000))
+    MODIFIES SQL DATA
+begin
+	insert into `medical_office_mvp`.doctors (first_name, last_name, medical_id, speciality, email_address, password, image_url) values (v_first_name, v_last_name, v_medical_id, v_speciality, v_email_address, v_password, v_image_url);
+	select * from doctors d where id = last_insert_id();
+	commit;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `add_new_patient` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `add_new_patient`(v_first_name varchar(100), v_last_name varchar(100), v_date_of_birth varchar(100), v_phone_number varchar(100), v_contact_address varchar(100), v_health_card_number varchar(100), v_email_address varchar(100), v_password varchar(100), v_gender varchar(100), v_emergency_contact varchar(100))
+    MODIFIES SQL DATA
+begin
+insert into medical_office_mvp.patients
+(first_name, last_name, date_of_birth, phone_number, contact_address, health_card_number, email_address, password, gender, emergency_contact )
+values 
+(v_first_name, v_last_name, v_date_of_birth, v_phone_number, v_contact_address, v_health_card_number, v_email_address, v_password, v_gender, v_emergency_contact);
+select id, email_address, health_card_number from patients where id=last_insert_id();
+commit;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `delete_appointment` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `delete_appointment`(v_id int)
+    MODIFIES SQL DATA
+begin
+	delete from `medical_office_mvp`.appointments where id=v_id;
+	commit;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `delete_appointment_by_patient_id` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `delete_appointment_by_patient_id`(v_id int)
+    MODIFIES SQL DATA
+begin
+	select * from appointments where id = v_id;
+commit;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `delete_doctor` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `delete_doctor`(v_id int)
+    MODIFIES SQL DATA
+begin
+	delete from `medical_office_mvp`.doctors where id = v_id;
+	commit;
+end ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `delete_doctor_session` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `delete_doctor_session`(v_id int)
+    MODIFIES SQL DATA
+begin
+	DELETE FROM medical_office_mvp.doctor_session WHERE doctor_id=v_id;
+	commit;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `delete_patient` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `delete_patient`(v_id int)
+    MODIFIES SQL DATA
+begin
+	delete from `medical_office_mvp`.patients where id = v_id;
+	commit;
+end ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `delete_patient_session` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `delete_patient_session`(v_patient_id int)
+    MODIFIES SQL DATA
+begin
+	DELETE FROM medical_office_mvp.patient_session WHERE patient_id=v_patient_id;
+	commit;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `doctor_login` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `doctor_login`(email_address_input varchar(100), password_input varchar(100))
+begin
+	select * from doctors where password_input = password and email_address_input = email_address;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `edit_appointment` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `edit_appointment`(v_id int, v_patient_id int, v_doctor_id int, v_date date, v_start_time time, v_end_time time, v_status varchar(100))
+    MODIFIES SQL DATA
+begin
+	update `medical_office_mvp`.appointments  
+	set 
+	patient_id = coalesce (v_patient_id, patient_id),
+	doctor_id = coalesce (v_doctor_id, doctor_id),
+	`date` = coalesce (v_date, `date`),
+	start_time = coalesce (v_start_time, start_time),
+	end_time = coalesce (v_end_time, end_time),
+	status = coalesce (v_status, status)
+	where id = v_id;
+	select * from appointments a  where id=v_id;
+	commit;
+end ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `get_all_doctors` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_all_doctors`()
+begin
+	select * from doctors;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `get_all_patients` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_all_patients`()
+begin
+	select * from patients;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `get_appointment_by_doctor_id` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_appointment_by_doctor_id`(v_id int)
+begin
+	select * from appointments where id = v_id;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `get_appointment_by_patient_id` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_appointment_by_patient_id`(v_id int)
+begin
+	select * from appointments where id = v_id;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `get_doctor_by_email` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_doctor_by_email`(v_email varchar(100))
+begin
+	select * from doctors where email_address = v_email;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `get_doctor_by_id` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_doctor_by_id`(v_id int)
+begin
+	select * from doctors where id = v_id;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `get_doctor_session_by_token` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_doctor_session_by_token`(v_doctor_token varchar(100))
+begin
+	select * from doctor_session ds where doctor_token = v_doctor_token;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `get_patient_by_id` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_patient_by_id`(v_id int)
+begin
+	select * from patients where id = v_id;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `get_patient_session_by_token` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_patient_session_by_token`(v_patient_token varchar(100))
+begin
+	select * from patient_session where patient_token = v_patient_token;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `patient_login` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `patient_login`(email_address_input varchar(100), password_input varchar(100))
+begin
+	select * from patients where password_input = password and email_address_input = email_address; 
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `post_doctor_login` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `post_doctor_login`(v_id int, v_doctor_token varchar(100))
+    MODIFIES SQL DATA
+begin
+	insert into doctor_session (doctor_id, doctor_token) values (v_id, v_doctor_token);
+	select * from doctor_session ds where doctor_token=v_doctor_token;
+	commit;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `post_doctor_session` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `post_doctor_session`(v_id int, v_doctor_token varchar(100))
+    MODIFIES SQL DATA
+begin
+	insert into doctor_session (doctor_id, doctor_token) values (v_id, v_doctor_token);
+	select * from doctor_session where doctor_token=v_doctor_token;
+	commit;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `post_patient_login` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `post_patient_login`(v_patient_id int, v_patient_token varchar(100))
+    MODIFIES SQL DATA
+begin
+	insert into patient_session (patient_id, patient_token) values (v_patient_id, v_patient_token);
+	select * from patient_session ps where patient_token=v_patient_token;
+	commit;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `update_doctor` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `update_doctor`(v_id int, v_first_name varchar(100), v_last_name varchar(100), v_medical_id varchar(100), v_speciality varchar(100),  v_email_address varchar(100), v_password varchar(100), v_image_url varchar(1000))
+    MODIFIES SQL DATA
+begin
+	update `medical_office_mvp`.doctors
+	set 
+	first_name = coalesce (v_first_name, first_name),
+	last_name = coalesce (v_last_name, last_name),
+	medical_id = coalesce (v_medical_id, medical_id),
+	speciality = coalesce (v_speciality, speciality),
+	password = coalesce (v_password, password),
+	email_address = coalesce (v_email_address, email_address),
+	image_url = coalesce (v_image_url, image_url)
+	where v_id = id;
+	select * from doctors d  where id= v_id;
+	commit;
+end ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `update_patient` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `update_patient`(v_id int, v_first_name varchar(100), v_last_name varchar(100), v_date_of_birth varchar(100), v_phone_number varchar(100), v_contact_address varchar(100), v_health_card_number varchar(100), v_email_address varchar(100), v_password varchar(100), v_gender varchar(100), v_emergency_contact varchar(100))
+    MODIFIES SQL DATA
+begin
+	update `medical_office_mvp`.patients  
+	set 
+	first_name = coalesce (v_first_name, first_name),
+	last_name = coalesce (v_last_name, last_name),
+	date_of_birth = coalesce (v_date_of_birth, date_of_birth),
+	phone_number = coalesce (v_phone_number, phone_number),
+	contact_address = coalesce (v_contact_address, contact_address),
+	health_card_number = coalesce (v_health_card_number, health_card_number),
+	email_address = coalesce (v_email_address, email_address),
+	password = coalesce (v_password, password),
+	gender = coalesce (v_gender, gender),
+	emergency_contact = coalesce (v_emergency_contact, emergency_contact)
+	where id = v_id;
+	select * from patients p  where id=v_id;
+	commit;
+end ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `validate_doctor_token` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `validate_doctor_token`(v_doctor_token varchar(100))
+begin
+	select * from doctor_session ds join doctors d on ds.doctor_id=d.id where ds.doctor_token=v_doctor_token;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `validate_patient_token` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `validate_patient_token`(v_token varchar(100))
+begin
+	select * from patient_session ps join patients p on ps.patient_id=p.id where ps.patient_token=v_token;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2024-02-10 17:25:33
