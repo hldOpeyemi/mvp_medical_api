@@ -67,67 +67,67 @@ def edit_appointment():
  
 
  
-@appointment_bp.delete("/appoitnment")
+# @appointment_bp.delete("/appoitnment")
 
-def delete_appointment():
- try:
+# def delete_appointment():
+#  try:
   
-  password_input = request.json.get('password')
-  token = request.headers.get('token')
-  # print("CHECK THIS", token)
+#   password_input = request.json.get('password')
+#   token = request.headers.get('token')
+#   # print("CHECK THIS", token)
   
-  result = run_statement('CALL get_patient_session_by_token(?)', [token])
+#   result = run_statement('CALL get_patient_session_by_token(?)', [token])
 
-  session = result[0]
-  id = session[0]
+#   session = result[0]
+#   id = session[0]
 
-  result = run_statement('CALL get_patient_by_id(?)',[id])
+#   result = run_statement('CALL get_patient_by_id(?)',[id])
   
-  patient=result[0]
-  # print(restaurant)
-  password = patient[9]
-  # print(password)
-  id = patient[0]
-  # print(id)
+#   patient=result[0]
+#   # print(restaurant)
+#   password = patient[9]
+#   # print(password)
+#   id = patient[0]
+#   # print(id)
 
-  if (password != password_input):
-    return make_response(jsonify("Wrong Password"), 403)
+#   if (password != password_input):
+#     return make_response(jsonify("Wrong Password"), 403)
   
-  result = run_statement('CALL delete_patient(?)', [id])
+#   result = run_statement('CALL delete_patient(?)', [id])
 
-  return make_response(jsonify("Patient Deleted"),  200)
- except:
-  return make_response("This is an error", 400)
+#   return make_response(jsonify("Patient Deleted"),  200)
+#  except:
+#   return make_response("This is an error", 400)
  
-# @appointment_bp.get("/patient")
+# # @appointment_bp.get("/patient")
+# # @validate_token
+# # # add validate_token if you want the user to sign in first before viewing another user
+# # def get_all_patients():
+# #   # print(request.args.get("patient_id"))
+# #   try:
+
+# #     result = run_statement('CALL get_all_patients')
+
+# #     return make_response(jsonify(result),  200)
+# #   except:
+# #     return make_response("This is an error", 400)
+  
+
+# @appointment_bp.delete("/patient-login")
 # @validate_token
-# # add validate_token if you want the user to sign in first before viewing another user
-# def get_all_patients():
-#   # print(request.args.get("patient_id"))
-#   try:
-
-#     result = run_statement('CALL get_all_patients')
-
-#     return make_response(jsonify(result),  200)
-#   except:
-#     return make_response("This is an error", 400)
+# def patient_logout():
+#  try:
+#   token = request.headers.get('token')
+#   # print("CHECK THIS", token)
   
-
-@appointment_bp.delete("/patient-login")
-@validate_token
-def patient_logout():
- try:
-  token = request.headers.get('token')
-  # print("CHECK THIS", token)
+#   session_columns = ['patient_id', 'token']
   
-  session_columns = ['patient_id', 'token']
-  
-  result = run_statement('CALL get_patient_session_by_token(?)', [token])
+#   result = run_statement('CALL get_patient_session_by_token(?)', [token])
 
-  session = serialize_data(session_columns, result)[0]
+#   session = serialize_data(session_columns, result)[0]
   
-  result = run_statement('CALL delete_patient_session(?)', [session['patient_id']])
+#   result = run_statement('CALL delete_patient_session(?)', [session['patient_id']])
 
-  return make_response(jsonify("You have successfully logged Out"),  200)
- except:
-  return make_response("This is an error", 400)
+#   return make_response(jsonify("You have successfully logged Out"),  200)
+#  except:
+#   return make_response("This is an error", 400)
